@@ -1,0 +1,444 @@
+﻿<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>People Search Table Control</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">Displays the Search Results control.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#SearchResults;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://activeinetservices.sharepoint.com/sites/xyz/_catalogs/masterpage/Display Templates/Content Web Parts/Custom/Control_SearchResults_Table.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:CrawlerXSLFile msdt:dt="string"></mso:CrawlerXSLFile>
+<mso:HtmlDesignPreviewUrl msdt:dt="string"></mso:HtmlDesignPreviewUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+	<script>
+		$includeCSS(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/Content Web Parts/Custom/EmployeeDirectory.css");
+		$includeLanguageScript(this.url, location.protocol + "//code.jquery.com/jquery-1.11.2.min.js");
+	</script>
+
+    <div id="Control_SearchResults">
+
+<!--#_
+		// Make REST calls to the Search API to "light up" the letters.
+		var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		var letters = alphabet.split("");
+		var lettersSearch = []; // Array to hold the AJAX promises
+		var currentSearch = (location.href.indexOf("k=lastname%3A") > 0) ? location.href.split("k=lastname%3A")[1].substr(0, 1) : "";
+		var thisPage = location.pathname;
+_#-->                    
+
+		<!-- Alpha selector container -->
+		<div id="edir-alpha-links">
+			<span><a href=_#=thisPage=#_>All</a></span>
+<!--#_
+		// Loop through the alphabet and make a call to the search API for each starting letter
+		for(var i=0; i < letters.length; i++) {
+			var searchTerm = letters[i];
+			var letterClass = (currentSearch === searchTerm) ? "selected" : "";		
+
+			// TODO Build the calls into one REST $batch. See: http://www.andrewconnell.com/blog/part-1-sharepoint-rest-api-batching-understanding-batching-requests
+			lettersSearch[i] = getSearchResultsUsingREST("LastName%3A" + searchTerm + "*");
+_#-->
+			<span id="edir-alpha-links-_#= searchTerm =#_">
+				<a class="_#=letterClass=#_" href="_#= location.pathname =#_#k=lastname%3A_#= searchTerm =#_*">_#= searchTerm =#_</a>
+			</span>
+<!--#_
+		}
+_#-->                    
+		</div>	
+<!--#_
+		// When all the requests have completed...
+		$.when.apply($, lettersSearch).done(function() {
+
+			for(var i=0; i < letters.length; i++) {
+		
+				var searchTerm = letters[i];		
+				var count = this[i];
+
+				var letter = $("#edir-alpha-links-" + letters[i]);
+				if(count == 0) {
+					letter.html(searchTerm);
+					letter.addClass("no-link");
+				};
+			}
+
+		});
+
+		function getSearchResultsUsingREST(queryText) {
+		
+			var result = new $.Deferred();
+			var resultCount = 0;
+		
+			// We only need to fetch the first result for each letter to know if we should light it up
+			// The sourceId is the GUID for the 'Local People Results' Result Source
+			var searchUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/search/query?querytext='" + queryText + "'&sourceId=%27b09a7990-05ea-4af9-81ef-edfab16c4e31%27&rowlimit=1&selectproperties='WorkId'";
+		
+			var p = $.ajax({
+				url: searchUrl,
+				method: "GET",
+				headers: { "Accept": "application/json; odata=verbose" }
+			});
+			
+			p.done(function(data) {
+				// Return just the count of results, which will be 0 or 1
+				result.resolveWith(data.d.query.PrimaryQueryResult.RelevantResults.RowCount);
+			});
+		
+			return result.promise();
+		}
+
+_#-->                    
+
+
+
+<!--#_
+        if (Srch.U.shouldAnimate(ctx.DataProvider)){            
+            Srch.U.hideElement(ctx.ClientControl.get_element());
+            ctx.OnPostRender = function(){ Srch.U.animateResults(ctx.ClientControl, ctx.DataProvider.get_userAction()); }; 
+        }
+_#-->                    
+        <div class="ms-srch-result" id="Result" name="Control">
+<!--#_ 
+            if(!$isNull(ctx.ScriptApplicationManager) && !$isNull(ctx.DataProvider) && !$isNull(ctx.ClientControl)){
+                var appStates = ctx.ScriptApplicationManager.states;
+
+                var getUpScopeHtml;
+                if(ctx.ClientControl.get_showUpScopeMessage()){  
+                    getUpScopeHtml = function(linkId) {
+                        var upScopeUrl = ctx.DataProvider.get_upScopeUrl();
+                        if (!$isEmptyString(upScopeUrl)) {
+                            var upScopeTitle = String.format($resource("rs_UpscopeTitle"), $resource("rs_UpScopeActionPhrase"));
+                            var upScopeLinkHtml = String.format('<a id="{0}" href="{1}" class="ms-searchNotification" title="{2}">' + 
+                                $htmlEncode($resource("rs_UpScopeActionPhrase")) +
+                            '</a>', $htmlEncode(linkId), $urlHtmlEncode(upScopeUrl), $htmlEncode(upScopeTitle));
+                            return String.format($htmlEncode($resource("rs_Upscope")), upScopeLinkHtml);
+                        }
+                    };
+_#-->
+                    <div id="UpScopeLinkTop" class="ms-srch-upscope-top">
+                        _#= getUpScopeHtml("UpScopeLinkTopA") =#_
+                    </div>
+<!--#_                     
+                }
+                                var showSortOptions = ctx.ClientControl.get_showSortOptions() && !$isEmptyArray(ctx.DataProvider.get_availableSorts());
+
+                var availableSorts = ctx.DataProvider.get_availableSorts();
+				availableSorts.push({"name":"FirstName-ASC","sorts":[{"p":"FirstName","d":0}]});
+				availableSorts.push({"name":"FirstName-DES","sorts":[{"p":"FirstName","d":1}]});
+				availableSorts.push({"name":"Title-ASC","sorts":[{"p":"Title","d":0}]});
+				availableSorts.push({"name":"Title-DES","sorts":[{"p":"Title","d":1}]});
+
+				ctx.DataProvider.set_availableSorts(availableSorts);
+                
+                var showLanguageOptions = ctx.ClientControl.get_showLanguageOptions() && !$isNull(appStates.languages) && appStates.languages.length > 1;
+
+                if(showSortOptions || showLanguageOptions){                    
+                    var resultHeaderClassNoEncode = "ms-metadata";
+                    if (showLanguageOptions && !showSortOptions && ctx.ClientControl.get_repositionLanguageDropDown()) {
+                         resultHeaderClassNoEncode += " ms-srch-result-resultHeader-onlyLanguage";
+                    }
+_#-->                
+                    <div id="ResultHeader" class="_#= resultHeaderClassNoEncode =#_">
+                        <ul id="Actions">                    
+<!--#_ 
+                            if(showLanguageOptions){
+                               var languageDropDownClassNoEncode = "";
+                               if (ctx.ClientControl.get_repositionLanguageDropDown()) {
+                                    languageDropDownClassNoEncode = "ms-srch-result-languageDropDown";                                   
+                               }
+_#-->
+                                <li id="Lang" class="_#= languageDropDownClassNoEncode =#_">
+                                    <select title="_#= $htmlEncode(Srch.Res.rs_LanguageDescription) =#_" id="LangSel" onchange="$getClientControl(this).changeQueryLanguage(this.value);">
+<!--#_ 
+                                    for (var i = 0; i < appStates.languages.length; i++) {
+                                        var lang = appStates.languages[i];
+                                        if(ctx.DataProvider.get_currentQueryState().l == lang.id) { 
+_#-->
+                                            <option selected="selected" value="_#= $htmlEncode(lang.id) =#_">
+                                                _#= $htmlEncode(lang.label) =#_
+                                            </option>
+<!--#_ 
+                                        } else { 
+_#-->
+                                            <option value="_#= $htmlEncode(lang.id) =#_">
+                                                _#= $htmlEncode(lang.label) =#_
+                                            </option>
+<!--#_ 
+                                        } 
+                                    } 
+_#-->
+                                    </select>
+                                </li>
+<!--#_                      
+                            }
+                            if(showSortOptions){
+                                var availableSorts = ctx.DataProvider.get_availableSorts();
+_#-->
+								<h3>Click the dropdown to sort</h3>
+                                <li id="Sortby">
+                                    <select title="_#= $htmlEncode(Srch.Res.rs_SortDescription) =#_" id="SortbySel" onchange="$getClientControl(this).sortOrRank(this.value);">
+<!--#_ 
+                                    for (var i = 0; i < availableSorts.length; i++) {
+                                        var cplxsort = availableSorts[i];
+                                        if(!$isNull(cplxsort)){
+                                            if(ctx.DataProvider.getSortRankName() == cplxsort.name) { 
+_#-->
+                                                <option selected="selected" value="_#= $htmlEncode(cplxsort.name) =#_">
+                                                    _#= $htmlEncode(cplxsort.name) =#_
+                                                </option>
+<!--#_ 
+                                            } else { 
+_#-->
+                                                <option value="_#= $htmlEncode(cplxsort.name) =#_">
+                                                    _#= $htmlEncode(cplxsort.name) =#_
+                                                </option>
+<!--#_ 
+                                            } 
+                                        }
+                                    } 
+_#-->
+                                    </select>
+
+                                </li>
+<!--#_                      	
+                            }
+_#-->
+                        </ul>
+                    </div>
+<!--#_
+                }
+                var hasPersonalResults = false;
+                if(ctx.ClientControl.get_showPersonalFavorites()){                    
+
+                    var pfTable = Srch.U.getTableOfType(ctx.ClientControl.get_currentResultTableCollection(), Microsoft.SharePoint.Client.Search.Query.KnownTableTypes.personalFavoriteResults);
+                    if(!$isNull(pfTable)){                        
+                        var pfRows = pfTable[Srch.U.PropNames.resultRows];
+                        if(!$isNull(pfRows) && pfRows.length > 0)
+                        {
+                            var pfRow = pfRows[0];
+                            if(!$isNull(pfRow) && !$isEmptyString(pfRow.Title) && !$isEmptyString(pfRow.Url))
+                            {
+                                hasPersonalResults = true;
+                                var pfId = ctx.ClientControl.get_nextUniqueId();
+                                var pfTitle = Srch.U.getHighlightedProperty(pfId, pfRow, "Title");
+                                if ($isEmptyString(pfTitle))
+                                    pfTitle = $htmlEncode(pfRow.Title);
+_#-->                
+                                <div class="ms-srch-result-personalResult">
+                                    <div class="ms-srch-result-personalResult-prompt">_#= $htmlEncode(Srch.Res.qs_PersonalResultTitleSingular) =#_</div>                                    
+                                    <a id="PersonalResult" class="ms-textLarge" href="_#= $urlHtmlEncode(pfRow.Url) =#_">_#= Srch.U.trimTitle(pfTitle, Srch.U.titleTruncationLength, 2) =#_</a>
+                                </div>
+<!--#_ 
+                            }
+                        }
+                    } 
+                }
+                if(ctx.ClientControl.get_showDidYouMean() && !hasPersonalResults){                    
+                    if(!$isNull(ctx.ListData) && !$isEmptyString(ctx.ListData.SpellingSuggestion)){
+                        var dymTerm = ctx.ListData.SpellingSuggestion;
+                        var dymHtml = "<a id='DidYouMean' class='ms-bold ms-italic' href='#' onclick='$getClientControl(this).changeQueryTerm(\"" + $scriptEncode(dymTerm) + "\");return Srch.U.cancelEvent(event);'>" + $htmlEncode(dymTerm) + "</a>";
+_#-->                
+                        <div class="ms-srch-result-didYouMean">
+                            _#= String.format($htmlEncode(Srch.Res.rs_DidYouMean), dymHtml) =#_
+                        </div>
+<!--#_ 
+                    } 
+                }
+                if (Srch.U.isPageInEditMode()){
+                    var sourcesHtml = "<a href='" + $urlHtmlEncode(ctx.ScriptApplicationManager.get_resultSourcesUrl()) + "' target='_blank'>" + $htmlEncode(Srch.Res.rs_Edit_ResultSources) + "</a>";
+                    var displayTemplatesHtml = "<a href='" + $urlHtmlEncode(ctx.ScriptApplicationManager.get_displayTemplatesUrl()) + "' target='_blank'>" + $htmlEncode(Srch.Res.rs_Edit_DisplayTemplate) + "</a>";
+                    var resultTypesHtml = "<a href='" + $urlHtmlEncode(ctx.ScriptApplicationManager.get_resultTypesUrl()) + "' target='_blank'>" + $htmlEncode(Srch.Res.rs_Edit_ResultType) + "</a>";
+                    var queryRulesHtml = "<a href='" + $urlHtmlEncode(ctx.ScriptApplicationManager.get_queryRulesUrl()) + "' target='_blank'>" + $htmlEncode(Srch.Res.rs_Edit_QueryRules) + "</a>";
+                    var configureResultsUrl = "javascript:HelpWindowKey(\"WSSEndUser_ConfigureResultsWPInEditMode\")";
+                    var configureResultsLink = "<a href=" + configureResultsUrl + ">" + $htmlEncode(Srch.Res.rs_Edit_ConfigureSearchResults_Link) + "</a>";  
+_#--> 
+                    <div id="EditMode-CustomizingResults" class="ms-trcnoti-base ms-srch-msg ms-srch-msg-border">
+                        <div class="ms-srch-msg-section">
+                            <h2 class="ms-accentText">_#= $htmlEncode(Srch.Res.rs_Edit_ResultSourcesTitle) =#_</h2>
+                            <div>_#= String.format($htmlEncode(Srch.Res.rs_Edit_ResultSourcesDescription), sourcesHtml) =#_</div>
+                        </div>
+                        <div class="ms-srch-msg-section">
+                            <h2 class="ms-accentText">_#= $htmlEncode(Srch.Res.rs_Edit_ResultTypesTitle) =#_</h2>
+                            <div>_#= String.format($htmlEncode(Srch.Res.rs_Edit_ResultTypesDescription), displayTemplatesHtml, resultTypesHtml) =#_</div>
+                        </div>
+                        <div class="ms-srch-msg-section">
+                            <h2 class="ms-accentText">_#= $htmlEncode(Srch.Res.rs_Edit_QueryRulesTitle) =#_</h2>
+                            <div>_#= String.format($htmlEncode(Srch.Res.rs_Edit_QueryRulesDescription), queryRulesHtml) =#_</div>
+                        </div>
+                        <div class="ms-srch-msg-section">
+                            <div>_#= String.format($htmlEncode(Srch.Res.rs_Edit_ConfigureSearchResults), configureResultsLink) =#_</div>
+                        </div>
+                    </div>
+<!--#_                     
+                }
+_#-->        
+                <div id="Groups" class="ms-srch-result-groups">
+<!--#_ 
+                    ctx.ListDataJSONGroupsKey = "ResultTables"; 
+_#-->
+                    <table width="100%" class="ms-listviewtable">
+                    _#= ctx.RenderGroups(ctx) =#_
+                    </table>
+<!--#_
+                    if(ctx.ClientControl.get_shouldShowNoResultMessage()){
+_#-->
+                        <div id="NoResult" class="ms-srch-result-noResults">
+<!--#_
+                            var emptyMessage = ctx.ClientControl.get_emptyMessage();
+                            if ($isEmptyString(emptyMessage))
+                            {
+_#-->
+                                <div class="ms-textLarge ms-srch-result-noResultsTitle">_#= $htmlEncode(Srch.Res.rs_NoResultsTitle) =#_</div>
+                                <div>_#= $htmlEncode(Srch.Res.rs_NoResultsSuggestions) =#_</div>
+                                <ul>
+                                    <li>_#= $htmlEncode(Srch.Res.rs_NoResultsSpelling) =#_</li>
+                                    <li>_#= $htmlEncode(Srch.Res.rs_NoResultsDifferentTerms) =#_</li>
+                                    <li>_#= $htmlEncode(Srch.Res.rs_NoResultsGeneralTerms) =#_</li>
+                                    <li>_#= $htmlEncode(Srch.Res.rs_NoResultsFewerTerms) =#_</li>
+<!--#_
+                                    if(ctx.DataProvider.get_currentQueryState().r){
+_#-->
+                                        <li>_#= $htmlEncode(Srch.Res.rs_NoResultsRefiners) =#_</li>
+<!--#_
+                                    }
+                                    var searchTipsUrl = "javascript:HelpWindowKey(\"WSSEndUser_SearchTips\")";
+                                    var searchTipsLink = "<a href=" + searchTipsUrl + ">" + $htmlEncode(Srch.Res.rs_NoResultsTips_Link) + "</a>";
+_#-->
+                                    <li>_#= String.format($htmlEncode(Srch.Res.rs_NoResultsTips), searchTipsLink) =#_</li>
+                                </ul>
+<!--#_
+                            }
+                            else
+                            {
+_#-->
+                                _#= $htmlEncode(emptyMessage) =#_
+<!--#_
+                            }
+_#-->
+                        </div>
+<!--#_
+                    }
+_#-->
+                </div>
+
+<!--#_
+                if(ctx.ClientControl.get_showUpScopeMessage()){
+_#-->
+                    <div id="UpScopeLinkBottom" class="ms-srch-upscope-bottom">
+                        _#= getUpScopeHtml("UpScopeLinkBottomA") =#_
+                    </div>
+<!--#_ 
+                } 
+
+                if(ctx.ClientControl.get_showPaging()){
+                    var pagingInfo = ctx.ClientControl.get_pagingInfo();
+                    if(!$isEmptyArray(pagingInfo)){ 
+_#-->
+                        <ul id="Paging" class="ms-srch-Paging">
+<!--#_ 
+                        for (var i = 0; i < pagingInfo.length; i++) {
+                            var pl = pagingInfo[i];
+                            if(!$isNull(pl)) {
+                                var imagesUrl = GetThemedImageUrl('searchresultui.png');
+                                if(pl.startItem == -1) { 
+                                    var selfLinkId = "SelfLink_" + pl.pageNumber;
+_#-->
+                                    <li id="PagingSelf"><a id="_#= $htmlEncode(selfLinkId) =#_">_#= $htmlEncode(pl.pageNumber) =#_</a></li>
+<!--#_ 
+                                } else if(pl.pageNumber == -1) { 
+                                    var iconClass = Srch.U.isRTL() ? "ms-srch-pagingNext" : "ms-srch-pagingPrev";                                    
+_#-->
+                                    <li id="PagingImageLink"><a id="PageLinkPrev" href="#" class="ms-commandLink ms-promlink-button ms-promlink-button-enabled ms-verticalAlignMiddle" title="_#= $htmlEncode(pl.title) =#_" onclick="$getClientControl(this).page(_#= $htmlEncode(pl.startItem) =#_);return Srch.U.cancelEvent(event);">
+                                        <span class="ms-promlink-button-image">
+                                            <img src="_#= $urlHtmlEncode(imagesUrl) =#_" class="_#= $htmlEncode(iconClass) =#_" alt="_#= $htmlEncode(pl.title) =#_" />
+                                        </span>
+                                    </a></li>
+<!--#_ 
+                                } else if(pl.pageNumber == -2) { 
+                                    var iconClass = Srch.U.isRTL() ? "ms-srch-pagingPrev" : "ms-srch-pagingNext";
+_#-->
+                                    <li id="PagingImageLink"><a id="PageLinkNext" href="#" class="ms-commandLink ms-promlink-button ms-promlink-button-enabled ms-verticalAlignMiddle" title="_#= $htmlEncode(pl.title) =#_" onclick="$getClientControl(this).page(_#= $htmlEncode(pl.startItem) =#_);return Srch.U.cancelEvent(event);">
+                                        <span class="ms-promlink-button-image">
+                                            <img src="_#= $urlHtmlEncode(imagesUrl) =#_" class="_#= $htmlEncode(iconClass) =#_" alt="_#= $htmlEncode(pl.title) =#_" />
+                                        </span>
+                                    </a></li>
+<!--#_ 
+                                } else { 
+                                    var pageLinkId = "PageLink_" + pl.pageNumber;
+_#-->
+                                    <li id="PagingLink"><a id="_#= $htmlEncode(pageLinkId) =#_" href="#" title="_#= $htmlEncode(pl.title) =#_" onclick="$getClientControl(this).page(_#= $htmlEncode(pl.startItem) =#_);return Srch.U.cancelEvent(event);">_#= $htmlEncode(pl.pageNumber) =#_</a></li>
+<!--#_ 
+                                }
+                            }
+                        } 
+_#-->
+                        </ul>
+<!--#_ 
+                    }
+                } 
+_#-->
+
+                <div class="ms-srch-resultFooter">
+<!--#_ 				
+                    if(ctx.ClientControl.get_showResultCount() && ctx.DataProvider.get_totalRows() > 0){						
+                        var start = ctx.DataProvider.get_currentQueryState().s;
+                        var resultsPerPage = ctx.DataProvider.get_resultsPerPage();
+                        var totalRows = ctx.DataProvider.get_totalRows();
+                        var countDisplayString = Srch.Res.rs_ApproximateResultCount;
+                        if (start + resultsPerPage > totalRows) { countDisplayString = (totalRows == 1)? Srch.Res.rs_SingleResultCount : Srch.Res.rs_ResultCount; }
+_#-->
+                        <div id="ResultCount" class="ms-srch-resultscount">
+                            _#= String.format($htmlEncode(countDisplayString), $htmlEncode(totalRows.localeFormat("N0"))) =#_
+                        </div>
+<!--#_ 
+                    }				
+_#-->
+
+                    <ul id="ResultFooter">
+<!--#_ 
+                        if(ctx.ClientControl.get_showAlertMe()){
+                            var alertMeLabel = $htmlEncode($resource("rs_AlertMe"));
+                            var queryTerm = ctx.DataProvider.get_currentQueryState().k;
+                            var serializedQuery = Srch.U.getTableProperty(ctx.ClientControl.get_currentResultTableCollection(), "SerializedQuery");
+_#-->
+                            <li id="AlertMeLi">
+                                <a id="CSR_AM1" href="javascript:{}" title="_#= alertMeLabel =#_" onclick="EnsureScriptParams('SearchUI.js', 'Srch.SU.searchResultAlertMe', '_#= $scriptEncode(queryTerm) =#_', '_#= $scriptEncode(serializedQuery) =#_');">
+                                    _#= alertMeLabel =#_
+                                </a>
+                            </li>
+<!--#_ 
+                        }
+
+                        if(ctx.ClientControl.get_showPreferencesLink()){
+                            var preferencesUrl = ctx.ScriptApplicationManager.get_preferencesUrl();
+                            if(!$isEmptyString(preferencesUrl)){ 
+_#-->
+                                <li id="Preferences"><a title="_#= $htmlEncode(Srch.Res.rs_Preferences) =#_" id="PreferencesLink" href="_#= $urlHtmlEncode(preferencesUrl) =#_">_#= $htmlEncode(Srch.Res.rs_Preferences) =#_</a></li>
+<!--#_ 
+                            }
+                        }
+
+                        if(ctx.ClientControl.get_showAdvancedLink()){
+                            var advancedUrl = ctx.ClientControl.get_advancedUrl();
+                            if(!$isEmptyString(advancedUrl)){ 
+_#-->
+                                <li id="Advanced"><a title="_#= $htmlEncode(Srch.Res.rs_Advanced) =#_" id="AdvancedLink" href="_#= $urlHtmlEncode(advancedUrl) =#_">_#= $htmlEncode(Srch.Res.rs_Advanced) =#_</a></li>
+<!--#_ 
+                            }
+                        }
+_#-->
+                    </ul>
+                </div>
+<!--#_ 
+            } 
+_#-->
+        </div>
+    </div>
+</body>
+</html>

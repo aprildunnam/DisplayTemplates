@@ -1,0 +1,101 @@
+﻿/* Alpha links for search */
+#DeltaPlaceHolderSearchArea{
+	display:none;
+}
+.ms-core-suiteLinkList{
+	display:none;
+}
+#ResultHeader{
+	margin:5px 5px 5px 5px!important;
+	display:block!important;
+}
+.note{
+	width:33%;
+	float:right;
+}
+#edir-alpha-links {
+	margin-top:10px;
+}
+#edir-alpha-links span {
+	padding:0 3px 0 3px;
+	width:35px;
+	font-size:18px;
+}
+#edir-alpha-links span.no-link {
+	padding:0 6px 0 6px;
+}
+#edir-alpha-links span a {
+	padding:0 3px 0 3px;
+	border-radius:6px 6px 6px 6px;
+	background-color:#26917b;
+	color:#fff;
+}
+#edir-alpha-links span a.selected {
+	background-color:#26917b;
+}
+/* Alpha links for search */
+.ms-listviewtable{
+	border-collapse:collapse!important;
+}
+.peopleItem td{
+	border:thin black solid;
+}
+.peopleHeader {
+}
+.peopleHeader td{
+	border:thin black solid;
+}
+
+tbody:nth-child(even) {
+	    background-color: #d3d3d3;
+
+}
+tr:nth-child(even) {
+    /*background-color: #d3d3d3;*/
+}
+.ms-viewheadertr {
+	background:#26917b;
+}
+.ms-vh2{
+	color:white;
+	font-weight:bold;
+	font-size:10pt;
+	text-align:center;
+}
+.label {
+	width:46%;
+	margin-top:8px;
+	margin-right:10px;
+	font-weight:bold;
+	float:none!important;
+}
+.ms-vh2 {
+}
+.clear {
+	clear:both;
+}
+.left{
+	float:left;
+	width:40%
+}
+.right{
+	float:right;
+	width:40%;
+}
+.btnRight{
+	float:right;
+	width:20%;
+}
+.profileDetail{
+	padding:15px;
+	position:fixed;
+	width:800px;
+	top: 40%;
+	left: 50%;
+	margin-left: -400px; 
+	margin-top: -40px;
+	z-index:100;
+}
+.ms-srch-sb-border{
+	border:thin black solid!important;
+}

@@ -1,0 +1,234 @@
+﻿<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Hero Image Slideshow</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">This Control Display Template will show a picture slideshow that rotates through a set of items every 5 seconds. It will show one item at a time with the title of the item overlaying the picture.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://mtrx.sharepoint.com/sites/MyMatrixMattersDev/_catalogs/masterpage/Display%20Templates/Content%20Web%20Parts/Control_Slideshow_Hero.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+
+    <!--
+            Warning: Do not try to add HTML to this section. Only the contents of the first <div>
+            inside the <body> tag will be used while executing Display Template code. Any HTML that
+            you add to this section will NOT become part of your Display Template.
+    -->
+    <script>
+        $includeLanguageScript(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/Language Files/{Locale}/CustomStrings.js");
+    </script>
+
+    <!--
+        Use the div below to author your Display Template. Here are some things to keep in mind:
+        * Surround any JavaScript logic as shown below using a "pound underscore" (#_ ... _#) token
+        inside a comment.
+
+        * Use the values assigned to your variables using an "underscore pound equals"
+        (_#= ... =#_) token.
+    -->
+
+    <div id="Slideshow">
+<!--#_ 
+var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
+
+if (!$isNull(ctx.ClientControl) &&
+    !$isNull(ctx.ClientControl.shouldRenderControl) &&
+    !ctx.ClientControl.shouldRenderControl())
+{
+    return "";
+}
+ctx.ListDataJSONGroupsKey = "ResultTables";
+
+window.cbs_Slideshow_init = function(controlDiv){
+    if(!controlDiv.timer){
+        cbs_Slideshow_setSlideStatus(controlDiv.children[0].children[0], controlDiv.children[2].children[0], true);
+        var timer = document.createAttribute("timer");
+        controlDiv.setAttributeNode(timer);
+
+        cbs_addMouseHandlers(controlDiv);
+
+        var numResults = ctx.ClientControl.get_numberOfItems();
+        if($isNull(window._slideShowCount))
+        {
+            window._slideShowCount = {};
+        }
+        window._slideShowCount[controlDiv.id] = numResults;
+
+        var startIndex = cbs_getStyle(controlDiv, 'direction') != 'rtl' ? 0 : numResults - 1;
+        cbs_Slideshow_changeSlide(controlDiv, startIndex);
+        cbs_Slideshow_timer(controlDiv, startIndex);
+    }
+};
+
+window.cbs_addMouseHandlers = function(slideshow)
+{
+    if($isNull(slideshow) || $isNull(slideshow.children) || slideshow.children.length == 0 || 
+        $isNull(slideshow.children[0].children) || slideshow.children[0].children.length == 0){
+        return;
+    }
+    var slideItems = slideshow.children[0].children;
+    for(var slideNum = 0; slideNum < slideItems.length; slideNum++){
+
+        (function()
+        {
+            var currentSlideNumber = slideNum;
+            var slideItem = slideItems[currentSlideNumber];
+            cbs_addEventListener(slideItem, 'mouseover', function(){ clearTimeout(slideshow.timer); });
+            cbs_addEventListener(slideItem, 'mouseout', function(){ cbs_Slideshow_changeSlide(slideshow, currentSlideNumber); }); 
+        })();
+    }
+}
+
+window.cbs_Slideshow_timer = function(controlDiv, currentIdx){
+    var TimerDelayMilliSeconds = 5000;
+    if($isNull(controlDiv) || controlDiv.children.length == 0){
+        setTimeout(function(){cbs_Slideshow_timer(controlDiv, currentIdx); controlDiv = null; currentIdx = null;}, TimerDelayMilliSeconds);
+        return;
+    }
+
+    currentIdx += cbs_getStyle(controlDiv, 'direction') != 'rtl' ? 1 : -1;
+    var numResults = window._slideShowCount[controlDiv.id];
+    if(currentIdx >= numResults){
+        currentIdx = 0;
+    }
+    else if(currentIdx < 0)
+    {
+        currentIdx = numResults - 1;
+    }
+    clearTimeout(controlDiv.timer);
+    controlDiv.timer = setTimeout(function(){cbs_Slideshow_changeSlide(controlDiv, currentIdx); controlDiv = null; currentIdx = null;}, TimerDelayMilliSeconds);
+};
+
+window.cbs_Slideshow_onclick = function(target, idx){
+    var slideshow = target.parentNode.parentNode;
+
+    clearTimeout(slideshow.timer);
+    cbs_Slideshow_changeSlide(slideshow, idx);
+};
+
+window.cbs_Slideshow_changeSlide = function(slideshow, slideIndex){
+    if($isNull(slideshow)){return;}
+    if($isNull(slideshow.children) || slideshow.children.length == 0){cbs_Slideshow_timer(slideshow, slideIndex); return;}
+
+    var slideItems = slideshow.children[0].children;
+    var buttonItems = slideshow.children[2].children;
+    var numResults = slideItems.length;
+    for(var k = 0; k < numResults; k++){
+        if(k == slideIndex) {continue;}
+        var buttonElement = k < buttonItems.length ? buttonItems[k] : null;
+        cbs_Slideshow_setSlideStatus(slideItems[k], buttonElement, false);
+    }
+    if(slideIndex >= 0 && slideIndex < numResults){
+        var buttonElement = slideIndex < buttonItems.length ? buttonItems[slideIndex] : null;
+        cbs_Slideshow_setSlideStatus(slideItems[slideIndex], buttonElement, true);
+    }
+
+    cbs_Slideshow_timer(slideshow, slideIndex); 
+};
+
+window.cbs_Slideshow_setSlideStatus = function(slideElement, buttonElement, isActive){
+    if(!$isNull(slideElement)){
+        slideElement.style.display = isActive ? "block" : "none";
+    }
+    if(!$isNull(buttonElement)){
+        var activeButtonClassName = "owl-dot active";
+        var inactiveButtonClassName = "owl-dot inactive";
+        var oldClassName = isActive ? inactiveButtonClassName : activeButtonClassName;
+        var newClassName = isActive ? activeButtonClassName : inactiveButtonClassName;
+        buttonElement.className = buttonElement.className.replace(oldClassName, newClassName);
+    }
+}
+
+window.cbs_getStyle = function(element,propertyName)
+{
+    var styleValue = null;
+    if($isNull(element)){return styleValue;}
+
+    if (element.currentStyle){
+        styleValue = element.currentStyle[propertyName];
+    }
+    else if (window.getComputedStyle){
+        styleValue = document.defaultView.getComputedStyle(element,null).getPropertyValue(propertyName);
+    }
+    return styleValue;
+}
+
+window.cbs_addEventListener = function(element, eventName, func)
+{
+    if(!$isNull(element) && !$isEmptyString(eventName) && !$isNull(func))
+    {
+        if(!$isNull(element.addEventListener))
+        {
+            element.addEventListener(eventName, func);
+        }
+        else if (!$isNull(element.attachEvent))
+        {
+            eventName = eventName.indexOf("on") == 0 ? eventName : "on" + eventName;
+            element.attachEvent(eventName, func);
+        }
+    }
+}
+
+var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_slideShow_");
+var itemsContainerId = encodedId + "container";
+var pagingOverlayId = encodedId + "pagingOverlay";
+var pagingBarId = encodedId + "pagingBar";
+var pagingMoreId = encodedId + "pagingMore";
+
+ctx.OnPostRender = [];
+
+ctx.OnPostRender.push(function(){
+    var slideshows = document.querySelectorAll(".cbs-Slideshow");
+
+    for(var i = 0; i < slideshows.length; i++){
+        cbs_Slideshow_init(slideshows[i]);
+    }
+});
+_#-->
+        <div class="cbs-Slideshow" id="_#= encodedId =#_" data-displaytemplate="ControlSlideshow" style="width:100%!important;height:458px!important;">
+            <div class="cbs-SlideshowItems" id="_#= itemsContainerId =#_">
+                _#= ctx.RenderGroups(ctx) =#_
+            </div>
+<!--#_
+if (ctx.ClientControl.get_shouldShowNoResultMessage()){
+_#-->
+            <div class="cbs-SlideShow-noResults">_#= $noResults =#_</div>
+<!--#_
+}
+_#-->
+            <div class="cbs-SlideshowPagingBarOverlay" id="_#= pagingOverlayId =#_"></div>
+            <div class="owl-dots" id="_#= pagingBarId =#_">
+        
+<!--#_
+var MaxNumOfResults = 12;
+var numResults = ctx.ClientControl.get_numberOfItems();
+var numResultsToShowPaging = Math.min(numResults, MaxNumOfResults);
+for(var i = 0; i < numResultsToShowPaging; i++){
+    var anchorId = encodedId + "pagingControl" + i;
+_#-->
+                <a class="owl-dot inactive" href="javascript:{}" onclick="cbs_Slideshow_onclick(this, _#= i =#_);" id="_#= anchorId =#_">
+                    <span>&nbsp;</span>
+                </a>
+<!--#_
+}
+if(numResults > numResultsToShowPaging){
+_#-->
+                <div class="cbs-SlideshowPaging-More" id="_#= pagingMoreId =#_">
+                    <span>&hellip;</span>
+                </div>
+<!--#_
+}
+_#-->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

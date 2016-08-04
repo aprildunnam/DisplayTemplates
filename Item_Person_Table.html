@@ -1,0 +1,141 @@
+﻿<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>People Search Table Item</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">Displays a result tailored for a person.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#SearchResults;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:CrawlerXSLFile msdt:dt="string"></mso:CrawlerXSLFile>
+<mso:ManagedPropertyMapping msdt:dt="string">&#39;AccountName&#39;:&#39;AccountName&#39;,&#39;FirstName&#39;:&#39;FirstName&#39;,&#39;LastName&#39;:&#39;LastName&#39;,&#39;Department&#39;:&#39;Department&#39;,&#39;JobTitle&#39;:&#39;JobTitle&#39;,&#39;Path&#39;:&#39;Path&#39;,&#39;PictureURL&#39;:&#39;PictureURL&#39;,&#39;PreferredName&#39;:&#39;PreferredName&#39;,&#39;WorkEmail&#39;:&#39;WorkEmail&#39;,&#39;WorkPhone&#39;:&#39;WorkPhone&#39;,&#39;MobilePhone&#39;:&#39;MobilePhone&#39;,&#39;YomiDisplayName&#39;:&#39;YomiDisplayName&#39;,&#39;Skills&#39;:&#39;Skills&#39;,&#39;BaseOfficeLocation&#39;:&#39;BaseOfficeLocation&#39;,&#39;AboutMe&#39;:&#39;AboutMe&#39;,&#39;Interest&#39;:&#39;Interests&#39;,&#39;Schools&#39;:&#39;Schools&#39;</mso:ManagedPropertyMapping>
+<mso:HtmlDesignPreviewUrl msdt:dt="string"></mso:HtmlDesignPreviewUrl>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://activeinetservices.sharepoint.com/sites/xyz/_catalogs/masterpage/Display Templates/Content Web Parts/Custom/Item_Person_Table.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+    <div id="Item_Person">
+<!--#_ 
+		if(!$isNull(ctx.CurrentItem) && !$isNull(ctx.ClientControl)){
+			var encodedPath = $urlHtmlEncode(ctx.CurrentItem.Path);    
+			var id = ctx.ClientControl.get_nextUniqueId();
+                    var itemId = id + Srch.U.Ids.item;
+			 var hoverId = id + Srch.U.Ids.hover;
+             var hoverUrl = "~sitecollection/_catalogs/masterpage/Display Templates/Search/Item_Default_HoverPanel.js";   
+             var accountName = ctx.CurrentItem.AccountName;
+             var userName = accountName.substr(accountName.indexOf('\\') + 1)             
+             var imgLink = "/_layouts/15/userphoto.aspx?size=L&accountname=" + $htmlEncode(ctx.CurrentItem.WorkEmail);
+
+ 				ctx.currentItem_ShowHoverPanelCallback = Srch.U.getShowHoverPanelCallback(itemId, hoverId, hoverUrl);
+                    ctx.currentItem_HideHoverPanelCallback = Srch.U.getHideHoverPanelCallback();
+                    _#-->
+                    
+                    
+<!--#_
+			// If this is the first item in the results, emit the table header
+			if(ctx.CurrentItemIdx === 0) {
+_#-->
+				<thead class="peopleHeader">
+					<tr class="ms-viewheadertr ms-vhltr">
+						<td class="ms-vh2">Display Name</td>
+						<td class="ms-vh2">First Name
+														<a href="#" title="FirstName ASC" onclick="$getClientControl(this).sortOrRank('FirstName-ASC');return false;">
+    <img alt="Ascending" src="/_layouts/15/images/sortaz.gif">
+</a>
+<a href="#" title="FirstName DES" onclick="$getClientControl(this).sortOrRank('FirstName-DES');return false;">
+    <img alt="Descending" src="/_layouts/15/images/sortza.gif">
+</a>
+
+						</td>
+						<td class="ms-vh2">Last Name
+						</td>
+				
+						<td class="ms-vh2">Title</td>
+						<td class="ms-vh2">Office</td>
+						<td class="ms-vh2">Department</td>
+						<td class="ms-vh2">Work #</td>
+						<td class="ms-vh2">Mobile #</td>
+						<td class="ms-vh2">Email</td>
+					</tr>
+				</thead>
+<!--#_ 
+			} 
+_#-->
+<tbody class="peopleItem">
+			<tr>
+				<td class="ms-vb2">
+					<a clicktype="Result" id="NameFieldLink" style="cursor: pointer; cursor: hand; " onclick="javascript:document.getElementById('_#= $htmlEncode(hoverId) =#_').style.display = 'block';"  title="_#= ctx.CurrentItem.PreferredName =#_">_#= ctx.CurrentItem.PreferredName =#_ </a>
+				</td>
+				<td class="ms-vb2">_#=ctx.CurrentItem.FirstName=#_</td>		
+				<td class="ms-vb2">_#=ctx.CurrentItem.LastName=#_</td>	
+				<td class="ms-vb2">_#=ctx.CurrentItem.JobTitle=#_</td>		
+                <td class="ms-vb2">_#= ctx.CurrentItem.BaseOfficeLocation =#_</td>
+				<td class="ms-vb2">_#=ctx.CurrentItem.Department=#_</td>
+				<td class="ms-vb2"><a href="tel:_#=ctx.CurrentItem.WorkPhone=#_">_#=ctx.CurrentItem.WorkPhone=#_</a></td>				
+				<td class="ms-vb2"><a href="tel:_#=ctx.CurrentItem.MobilePhone=#_">_#=ctx.CurrentItem.MobilePhone=#_</a></td>
+				<td class="ms-vb2">
+					<a href="mailto:_#=ctx.CurrentItem.WorkEmail=#_">_#=ctx.CurrentItem.WorkEmail=#_</a>
+				</td>
+			</tr>
+			</tbody>
+<!--#_ 
+	} 
+_#-->
+    <div id="_#= $htmlEncode(hoverId) =#_" class="profileDetail" style="display:none;">
+            <div style="background-color:#fff;box-shadow:10px 10px 5px #888;border:1px #000 solid;padding:10px;">
+                <h2 class="left">Profile Detail</h2>
+            <button id="close" class="btnRight" name="Close" value="Close" onclick="javascript:document.getElementById('_#= $htmlEncode(hoverId) =#_').style.display = 'block';">Close</button>
+                  <div class="clear"></div>
+                  
+                <div class="clear"></div>
+               <div class="left">
+                 <label class="label">Name:</label>
+                      _#=ctx.CurrentItem.PreferredName=#_
+                </div>	
+              <div class="right">
+                 <!--<img style="height:100px;width:100px;" src="_#=ctx.CurrentItem.PictureURL=#_"/>-->
+                  <img style="height:150px;width:150px;" src="_#=imgLink=#_"/>
+                </div>
+                <div class="left">
+                <label class="label">Email:</label>
+                    <a href="mailto:_#=ctx.CurrentItem.WorkEmail=#_">_#=ctx.CurrentItem.WorkEmail=#_</a>
+                </div>
+                 <div class="left">
+                <label class="label">Title:</label>
+                    _#=ctx.CurrentItem.JobTitle=#_
+                </div>
+ 				<div class="left">
+                <label class="label">Department:</label>
+                    _#=ctx.CurrentItem.Department=#_
+                </div>
+ 				<div class="left">
+                <label class="label">Skills:</label>
+                   _#=ctx.CurrentItem.Skills=#_
+                </div>
+ 				<div class="left">
+                <label class="label">About Me:</label>
+                   _#=ctx.CurrentItem.AboutMe=#_
+                </div>
+ 				<div class="left">
+                <label class="label">Office:</label>
+                    _#=ctx.CurrentItem.BaseOfficeLocation=#_
+                </div>
+                <div class="left">
+                <label class="label">Work Phone:</label>
+                    _#=ctx.CurrentItem.WorkPhone=#_
+                </div>
+                <div class="clear"></div>
+  					<div>
+                <label class="label">Mobile Phone:</label>
+                    _#=ctx.CurrentItem.MobilePhone=#_
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
